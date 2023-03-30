@@ -11,11 +11,17 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 pomo = 0
+timer = None
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
 def reset():
-    pass
+    global pomo
+    window.after_cancel(timer)
+    checkmarks.config(text='')
+    canvas.itemconfig(timer_text, text='00:00')
+    timer_label.config(text='Timer')
+    pomo = 0
 
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
@@ -29,6 +35,7 @@ def start_timer():
     elif pomo % 2 == 0:
         count_down(SHORT_BREAK_MIN * 60)
         timer_label.config(text='BREAK', fg=PINK)
+        checkmarks.config(text=('✓' * math.ceil(pomo / 2)))
     elif pomo % 2 != 0:
         count_down(WORK_MIN * 60)
         timer_label.config(text='WORK', fg=RED)
@@ -37,6 +44,7 @@ def start_timer():
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 
 def count_down(count):
+    global timer
     count_min = math.floor(count / 60)
     count_sec = math.floor(count % 60)
 
@@ -47,7 +55,7 @@ def count_down(count):
 
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
-        window.after(1000, count_down, count-1)
+        timer = window.after(1000, count_down, count-1)
     else:
         start_timer()
 # ---------------------------- UI SETUP ------------------------------- #
@@ -71,7 +79,7 @@ timer_text = canvas.create_text(110, 140, text='00:00', fill='white', font=(FONT
 # buttons
 start = tk.Button(text='Start', command=start_timer)
 start.grid(row=2, column=0)
-reset_button = tk.Button(text='Reset')
+reset_button = tk.Button(text='Reset',command=reset)
 reset_button.grid(row=2, column=2)
 
 # timer text
@@ -79,7 +87,7 @@ timer_label = tk.Label(text='Timer', font=(FONT_NAME, 45, 'normal'), fg=GREEN, b
 timer_label.grid(row=0, column=1)
 
 # checkmarks
-checkmarks = tk.Label(text='✓', fg=GREEN, bg=YELLOW, font=(FONT_NAME, 25, 'normal'))
+checkmarks = tk.Label(fg=GREEN, bg=YELLOW, font=(FONT_NAME, 25, 'normal'))
 checkmarks.grid(column=1, row=3)
 
 # Place image on window
