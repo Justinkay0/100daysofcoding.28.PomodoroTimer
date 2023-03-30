@@ -11,7 +11,6 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 pomo = 0
-countdown = 0
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
@@ -21,7 +20,18 @@ def reset():
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 def start_timer():
-    count_down(5)
+    global pomo
+    pomo += 1
+
+    if pomo % 8 == 0:
+        count_down(LONG_BREAK_MIN * 60)
+        timer_label.config(text='BREAK', fg=PINK)
+    elif pomo % 2 == 0:
+        count_down(SHORT_BREAK_MIN * 60)
+        timer_label.config(text='BREAK', fg=PINK)
+    elif pomo % 2 != 0:
+        count_down(WORK_MIN * 60)
+        timer_label.config(text='WORK', fg=RED)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
@@ -38,6 +48,8 @@ def count_down(count):
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
         window.after(1000, count_down, count-1)
+    else:
+        start_timer()
 # ---------------------------- UI SETUP ------------------------------- #
 
 
